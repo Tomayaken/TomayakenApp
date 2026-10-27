@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../views/survey_page.dart';
+import 'views/survey/survey_page.dart';
 
 void main() {
   runApp(const MyApp());
