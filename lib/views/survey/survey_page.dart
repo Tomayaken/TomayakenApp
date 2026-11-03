@@ -19,6 +19,12 @@ enum EvacuationStatus {
   notEvacuating,
 }
 
+enum HealthCondition {
+  healthy,
+  minorIssue,
+  medicalSupportRequired,
+}
+
 class SurveyPage extends StatefulWidget {
   const SurveyPage({super.key});
 
@@ -30,8 +36,35 @@ class _SurveyPageState extends State<SurveyPage> {
   AgeGroup? _selectedAgeGroup;
   Gender? _selectedGender;
   EvacuationStatus? _selectedEvacuationStatus;
+  HealthCondition? _selectedHealthCondition;
 
-  int _familyCount = 1; 
+  int _familyCount = 1;
+
+  final Set<String> _selectedCareNeeds = {};
+
+  final List<String> _careNeedOptions = [
+    '高齢者',
+    '乳幼児',
+    '妊婦',
+    '障害者',
+    'その他',
+  ];
+
+  final Set<String> _selectedSupportNeeds = {};
+
+  final List<String> _supportNeedOptions = [
+    '飲料水',
+    '食料',
+    '毛布',
+    '医薬品',
+    'おむつ',
+    'ミルク',
+    '充電設備',
+    'その他',
+  ];
+
+  final TextEditingController _remarksController =
+    TextEditingController();
 
   final TextEditingController _familyCountController =
       TextEditingController();
@@ -39,6 +72,7 @@ class _SurveyPageState extends State<SurveyPage> {
   @override
   void dispose() {
     _familyCountController.dispose();
+    _remarksController.dispose();
     super.dispose();
   }
 
@@ -181,6 +215,7 @@ class _SurveyPageState extends State<SurveyPage> {
                   });
                 },
               ),
+
               const SizedBox(height: 24),
 
               const Text(
@@ -227,18 +262,90 @@ class _SurveyPageState extends State<SurveyPage> {
               const SizedBox(height: 24),
 
               _buildSectionTitle('要配慮者情報'),
-              _buildPlaceholder('要配慮者入力領域'),
+
+              ..._careNeedOptions.map(
+                (option) => CheckboxListTile(
+                  title: Text(option),
+                  value: _selectedCareNeeds.contains(option),
+                  onChanged: (checked) {
+                    setState(() {
+                      if (checked ?? false) {
+                        _selectedCareNeeds.add(option);
+                      } else {
+                        _selectedCareNeeds.remove(option);
+                      }
+                    });
+                  },
+                ),
+              ),
 
               const SizedBox(height: 24),
 
               _buildSectionTitle('支援情報'),
-              _buildPlaceholder('必要な支援入力領域'),
-              _buildPlaceholder('体調状態入力領域'),
+
+              ..._supportNeedOptions.map(
+                (option) => CheckboxListTile(
+                  title: Text(option),
+                  value: _selectedSupportNeeds.contains(option),
+                  onChanged: (checked) {
+                    setState(() {
+                      if (checked ?? false) {
+                        _selectedSupportNeeds.add(option);
+                      } else {
+                        _selectedSupportNeeds.remove(option);
+                      }
+                    });
+                  },
+                ),
+              ),
+
+              _buildSectionTitle('体調状態'),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('問題なし'),
+                value: HealthCondition.healthy,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('軽度の不調'),
+                value: HealthCondition.minorIssue,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('医療支援が必要'),
+                value: HealthCondition.medicalSupportRequired,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
 
               const SizedBox(height: 24),
 
               _buildSectionTitle('その他'),
-              _buildPlaceholder('特記事項入力領域'),
+              TextField(
+                controller: _remarksController,
+                maxLines: 5,
+                maxLength: 500,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: '健康状態や必要な配慮事項などを入力してください',
+                ),
+              ),
 
               const SizedBox(height: 40),
 
@@ -248,8 +355,12 @@ class _SurveyPageState extends State<SurveyPage> {
                   onPressed: () {
                     debugPrint('年齢区分: $_selectedAgeGroup');
                     debugPrint('性別: $_selectedGender');
-                    debugPrint('世帯人数: ${_familyCountController.text}');
+                    debugPrint('世帯人数: $_familyCount');
                     debugPrint('避難状況: $_selectedEvacuationStatus');
+                    debugPrint('要配慮者: $_selectedCareNeeds');
+                    debugPrint('必要な支援: $_selectedSupportNeeds');
+                    debugPrint('体調状態: $_selectedHealthCondition');
+                    debugPrint('特記事項: ${_remarksController.text}');
                   },
                   child: const Text('送信'),
                 ),
