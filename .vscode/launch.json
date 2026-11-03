@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Chromeでアプリを起動",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "C:/Users/monim/OneDrive/デスクトップ/TomayakenApp",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "env": {
+        "PUB_CACHE": "${workspaceFolder}/.pub-cache"
+      },
+      "preLaunchTask": "Flutterのライブラリを準備"
+    }
+  ]
+}
