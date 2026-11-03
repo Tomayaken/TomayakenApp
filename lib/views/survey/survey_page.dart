@@ -43,6 +43,19 @@ class _SurveyPageState extends State<SurveyPage> {
     'その他',
   ];
 
+  final Set<String> _selectedSupportNeeds = {};
+
+  final List<String> _supportNeedOptions = [
+    '飲料水',
+    '食料',
+    '毛布',
+    '医薬品',
+    'おむつ',
+    'ミルク',
+    '充電設備',
+    'その他',
+  ];
+
   final TextEditingController _familyCountController =
       TextEditingController();
 
@@ -258,7 +271,23 @@ class _SurveyPageState extends State<SurveyPage> {
               const SizedBox(height: 24),
 
               _buildSectionTitle('支援情報'),
-              _buildPlaceholder('必要な支援入力領域'),
+
+              ..._supportNeedOptions.map(
+                (option) => CheckboxListTile(
+                  title: Text(option),
+                  value: _selectedSupportNeeds.contains(option),
+                  onChanged: (checked) {
+                    setState(() {
+                      if (checked ?? false) {
+                        _selectedSupportNeeds.add(option);
+                      } else {
+                        _selectedSupportNeeds.remove(option);
+                      }
+                    });
+                  },
+                ),
+              ),
+
               _buildPlaceholder('体調状態入力領域'),
 
               const SizedBox(height: 24),
@@ -277,6 +306,7 @@ class _SurveyPageState extends State<SurveyPage> {
                     debugPrint('世帯人数: $_familyCount');
                     debugPrint('避難状況: $_selectedEvacuationStatus');
                     debugPrint('要配慮者: $_selectedCareNeeds');
+                    debugPrint('必要な支援: $_selectedSupportNeeds');
                   },
                   child: const Text('送信'),
                 ),
