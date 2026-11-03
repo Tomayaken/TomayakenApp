@@ -19,6 +19,12 @@ enum EvacuationStatus {
   notEvacuating,
 }
 
+enum HealthCondition {
+  healthy,
+  minorIssue,
+  medicalSupportRequired,
+}
+
 class SurveyPage extends StatefulWidget {
   const SurveyPage({super.key});
 
@@ -30,6 +36,7 @@ class _SurveyPageState extends State<SurveyPage> {
   AgeGroup? _selectedAgeGroup;
   Gender? _selectedGender;
   EvacuationStatus? _selectedEvacuationStatus;
+  HealthCondition? _selectedHealthCondition;
 
   int _familyCount = 1;
 
@@ -56,12 +63,16 @@ class _SurveyPageState extends State<SurveyPage> {
     'その他',
   ];
 
+  final TextEditingController _remarksController =
+    TextEditingController();
+
   final TextEditingController _familyCountController =
       TextEditingController();
 
   @override
   void dispose() {
     _familyCountController.dispose();
+    _remarksController.dispose();
     super.dispose();
   }
 
@@ -288,12 +299,53 @@ class _SurveyPageState extends State<SurveyPage> {
                 ),
               ),
 
-              _buildPlaceholder('体調状態入力領域'),
+              _buildSectionTitle('体調状態'),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('問題なし'),
+                value: HealthCondition.healthy,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('軽度の不調'),
+                value: HealthCondition.minorIssue,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('医療支援が必要'),
+                value: HealthCondition.medicalSupportRequired,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
 
               const SizedBox(height: 24),
 
               _buildSectionTitle('その他'),
-              _buildPlaceholder('特記事項入力領域'),
+              TextField(
+                controller: _remarksController,
+                maxLines: 5,
+                maxLength: 500,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: '健康状態や必要な配慮事項などを入力してください',
+                ),
+              ),
 
               const SizedBox(height: 40),
 
@@ -307,6 +359,8 @@ class _SurveyPageState extends State<SurveyPage> {
                     debugPrint('避難状況: $_selectedEvacuationStatus');
                     debugPrint('要配慮者: $_selectedCareNeeds');
                     debugPrint('必要な支援: $_selectedSupportNeeds');
+                    debugPrint('体調状態: $_selectedHealthCondition');
+                    debugPrint('特記事項: ${_remarksController.text}');
                   },
                   child: const Text('送信'),
                 ),
