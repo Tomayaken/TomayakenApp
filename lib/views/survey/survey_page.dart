@@ -19,6 +19,12 @@ enum EvacuationStatus {
   notEvacuating,
 }
 
+enum HealthCondition {
+  healthy,
+  minorIssue,
+  medicalSupportRequired,
+}
+
 class SurveyPage extends StatefulWidget {
   const SurveyPage({super.key});
 
@@ -30,6 +36,7 @@ class _SurveyPageState extends State<SurveyPage> {
   AgeGroup? _selectedAgeGroup;
   Gender? _selectedGender;
   EvacuationStatus? _selectedEvacuationStatus;
+  HealthCondition? _selectedHealthCondition;
 
   int _familyCount = 1;
 
@@ -288,7 +295,40 @@ class _SurveyPageState extends State<SurveyPage> {
                 ),
               ),
 
-              _buildPlaceholder('体調状態入力領域'),
+              _buildSectionTitle('体調状態'),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('問題なし'),
+                value: HealthCondition.healthy,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('軽度の不調'),
+                value: HealthCondition.minorIssue,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
+
+              RadioListTile<HealthCondition>(
+                title: const Text('医療支援が必要'),
+                value: HealthCondition.medicalSupportRequired,
+                groupValue: _selectedHealthCondition,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHealthCondition = value;
+                  });
+                },
+              ),
 
               const SizedBox(height: 24),
 
@@ -307,6 +347,7 @@ class _SurveyPageState extends State<SurveyPage> {
                     debugPrint('避難状況: $_selectedEvacuationStatus');
                     debugPrint('要配慮者: $_selectedCareNeeds');
                     debugPrint('必要な支援: $_selectedSupportNeeds');
+                    debugPrint('体調状態: $_selectedHealthCondition');
                   },
                   child: const Text('送信'),
                 ),
