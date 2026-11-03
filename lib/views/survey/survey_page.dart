@@ -31,7 +31,17 @@ class _SurveyPageState extends State<SurveyPage> {
   Gender? _selectedGender;
   EvacuationStatus? _selectedEvacuationStatus;
 
-  int _familyCount = 1; 
+  int _familyCount = 1;
+
+  final Set<String> _selectedCareNeeds = {};
+
+  final List<String> _careNeedOptions = [
+    '高齢者',
+    '乳幼児',
+    '妊婦',
+    '障害者',
+    'その他',
+  ];
 
   final TextEditingController _familyCountController =
       TextEditingController();
@@ -181,6 +191,7 @@ class _SurveyPageState extends State<SurveyPage> {
                   });
                 },
               ),
+
               const SizedBox(height: 24),
 
               const Text(
@@ -227,7 +238,22 @@ class _SurveyPageState extends State<SurveyPage> {
               const SizedBox(height: 24),
 
               _buildSectionTitle('要配慮者情報'),
-              _buildPlaceholder('要配慮者入力領域'),
+
+              ..._careNeedOptions.map(
+                (option) => CheckboxListTile(
+                  title: Text(option),
+                  value: _selectedCareNeeds.contains(option),
+                  onChanged: (checked) {
+                    setState(() {
+                      if (checked ?? false) {
+                        _selectedCareNeeds.add(option);
+                      } else {
+                        _selectedCareNeeds.remove(option);
+                      }
+                    });
+                  },
+                ),
+              ),
 
               const SizedBox(height: 24),
 
@@ -248,8 +274,9 @@ class _SurveyPageState extends State<SurveyPage> {
                   onPressed: () {
                     debugPrint('年齢区分: $_selectedAgeGroup');
                     debugPrint('性別: $_selectedGender');
-                    debugPrint('世帯人数: ${_familyCountController.text}');
+                    debugPrint('世帯人数: $_familyCount');
                     debugPrint('避難状況: $_selectedEvacuationStatus');
+                    debugPrint('要配慮者: $_selectedCareNeeds');
                   },
                   child: const Text('送信'),
                 ),
