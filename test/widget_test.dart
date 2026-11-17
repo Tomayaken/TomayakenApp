@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tomayaken_app/main.dart';
 import 'package:tomayaken_app/screens/splash_screen.dart';
-import 'package:tomayaken_app/views/survey/survey_page.dart';
+import 'package:tomayaken_app/screens/user_registration_screen.dart';
 
 // アンケート画面の実装に依存しない、テスト専用の遷移先。
 class _TestDestination extends StatelessWidget {
@@ -17,16 +17,16 @@ Widget _testApp() => MaterialApp(
 );
 
 void main() {
-  testWidgets('アプリ起動後、スプラッシュから初回アンケートへ遷移する', (tester) async {
+  testWidgets('アプリ起動後、スプラッシュから利用者登録へ遷移する', (tester) async {
     await tester.pumpWidget(const MyApp());
     expect(find.byType(SplashScreen), findsOneWidget);
-    expect(find.byType(SurveyPage), findsNothing);
+    expect(find.byType(UserRegistrationScreen), findsNothing);
 
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
 
-    expect(find.byType(SurveyPage), findsOneWidget);
-    expect(find.text('初回アンケート'), findsOneWidget);
+    expect(find.byType(UserRegistrationScreen), findsOneWidget);
+    expect(find.text('利用者登録'), findsOneWidget);
     expect(find.byType(SplashScreen), findsNothing);
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
     expect(navigator.canPop(), isFalse);
