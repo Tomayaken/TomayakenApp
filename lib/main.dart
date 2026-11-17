@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'screens/splash_screen.dart';
+import 'views/disasters/disaster_watch.dart';
 import 'views/survey/survey_page.dart';
 
 void main() {
@@ -19,7 +20,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563A6)),
         scaffoldBackgroundColor: const Color(0xFFF4F6F9),
       ),
-      home: SplashScreen(nextScreenBuilder: (_) => const SurveyPage()),
+      home: SplashScreen(
+        nextScreenBuilder: (_) => const DisasterWatch(child: SurveyPage()),
+      ),
     );
   }
 }
