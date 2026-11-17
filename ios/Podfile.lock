@@ -1,0 +1,28 @@
+PODS:
+  - adaptive_platform_ui (0.1.0):
+    - Flutter
+  - Flutter (1.0.0)
+  - foldable (1.0.5):
+    - Flutter
+
+DEPENDENCIES:
+  - adaptive_platform_ui (from `.symlinks/plugins/adaptive_platform_ui/ios`)
+  - Flutter (from `Flutter`)
+  - foldable (from `.symlinks/plugins/foldable/ios`)
+
+EXTERNAL SOURCES:
+  adaptive_platform_ui:
+    :path: ".symlinks/plugins/adaptive_platform_ui/ios"
+  Flutter:
+    :path: Flutter
+  foldable:
+    :path: ".symlinks/plugins/foldable/ios"
+
+SPEC CHECKSUMS:
+  adaptive_platform_ui: df7a9b2e8063dd0e8eb0fa0bcc9467780f608f86
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  foldable: 1d5f77688e44e3754f129cecaa08403fcb75f612
+
+PODFILE CHECKSUM: 53a6aebc29ccee84c41f92f409fc20cd4ca011f1
+
+COCOAPODS: 1.16.2

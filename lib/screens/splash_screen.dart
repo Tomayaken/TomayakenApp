@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -23,9 +26,11 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
       _navigationTimer = Timer(const Duration(seconds: 2), () {
         if (!mounted) return;
-        Navigator.of(context).pushReplacement<void, void>(
-          MaterialPageRoute<void>(builder: widget.nextScreenBuilder),
-        );
+        final PageRoute<void> route = Platform.isIOS
+            ? CupertinoPageRoute<void>(builder: widget.nextScreenBuilder)
+            : MaterialPageRoute<void>(builder: widget.nextScreenBuilder);
+
+        Navigator.of(context).pushReplacement<void, void>(route);
       });
     });
   }
@@ -40,56 +45,58 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4F6F9),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 104,
-                  height: 104,
-                  decoration: BoxDecoration(
-                    color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(28),
+    return AdaptiveScaffold(
+      body: Material(
+        color: const Color(0xFFF4F6F9),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 104,
+                    height: 104,
+                    decoration: BoxDecoration(
+                      color: colors.primaryContainer,
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    child: Icon(
+                      Icons.health_and_safety_outlined,
+                      size: 60,
+                      color: colors.primary,
+                      semanticLabel: '避難所ナビのロゴ',
+                    ),
                   ),
-                  child: Icon(
-                    Icons.health_and_safety_outlined,
-                    size: 60,
-                    color: colors.primary,
-                    semanticLabel: '避難所ナビのロゴ',
+                  const SizedBox(height: 28),
+                  Text(
+                    '避難所ナビ',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colors.onSurface,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 28),
-                Text(
-                  '避難所ナビ',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colors.onSurface,
+                  const SizedBox(height: 12),
+                  Text(
+                    '避難支援・情報連携アプリ',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  '避難支援・情報連携アプリ',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
+                  const SizedBox(height: 40),
+                  const SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      semanticsLabel: 'アプリを準備しています',
+                    ),
                   ),
-                ),
-                const SizedBox(height: 40),
-                const SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    semanticsLabel: 'アプリを準備しています',
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

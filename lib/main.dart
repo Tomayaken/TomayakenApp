@@ -1,3 +1,4 @@
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/material.dart';
 
 import 'screens/splash_screen.dart';
@@ -12,14 +13,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return AdaptiveApp(
       title: '避難所ナビ',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563A6)),
-        scaffoldBackgroundColor: const Color(0xFFF4F6F9),
+      home: SplashScreen(
+        nextScreenBuilder: (_) => const SurveyPage(),
       ),
-      home: SplashScreen(nextScreenBuilder: (_) => const SurveyPage()),
     );
   }
 }
