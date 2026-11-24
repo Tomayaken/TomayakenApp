@@ -105,13 +105,20 @@ void main() {
     expect(disasterCalls, 2);
     expect(location.calls, 0);
     expect(shelterCalls, 0);
-    expect(find.text('災害開始の合図を待っています。'), findsOneWidget);
+    expect(find.text('現在、対応中の災害はありません。'), findsOneWidget);
+    expect(find.text('避難所一覧'), findsNothing);
   });
 
-  testWidgets('管理側の開始を検知した後だけGPS・一覧取得を開始し、同じ災害で繰り返さない', (tester) async {
+  testWidgets('災害開始後もアンケートを表示し、ボタンを押したときだけGPS・一覧を取得する', (tester) async {
     await open(tester);
     response = _active('one');
     await nextCheck(tester);
+    expect(find.text('アンケート画面'), findsOneWidget);
+    expect(find.byType(NearbySheltersPage), findsNothing);
+    expect(location.calls, 0);
+    expect(shelterCalls, 0);
+    await tester.tap(find.text('避難所一覧'));
+    await tester.pumpAndSettle();
     expect(find.byType(NearbySheltersPage), findsOneWidget);
     expect(location.calls, 1);
     expect(shelterCalls, 1);
@@ -129,22 +136,34 @@ void main() {
     expect(location.calls, 2);
   });
 
-  testWidgets('起動した時点で災害開始済みなら自動取得する', (tester) async {
+  testWidgets('起動時に災害開始済みでもボタンを押すまでアンケートを表示する', (tester) async {
     response = _active('one');
     await open(tester);
+    expect(find.text('アンケート画面'), findsOneWidget);
+    expect(find.byType(NearbySheltersPage), findsNothing);
+    expect(location.calls, 0);
+    expect(shelterCalls, 0);
+    await tester.tap(find.text('避難所一覧'));
+    await tester.pumpAndSettle();
     expect(location.calls, 1);
     expect(shelterCalls, 1);
   });
 
-  testWidgets('災害終了で一覧を閉じ、新しい災害で再び取得する', (tester) async {
+  testWidgets('災害終了で一覧を閉じ、新しい災害でもボタンを押して取得する', (tester) async {
     response = _active('one');
     await open(tester);
+    await tester.tap(find.text('避難所一覧'));
+    await tester.pumpAndSettle();
     response = http.Response('{"disaster":null}', 200);
     await nextCheck(tester);
     expect(find.byType(NearbySheltersPage), findsNothing);
     expect(find.text('アンケート画面'), findsOneWidget);
     response = _active('two');
     await nextCheck(tester);
+    expect(find.byType(NearbySheltersPage), findsNothing);
+    expect(location.calls, 1);
+    await tester.tap(find.text('避難所一覧'));
+    await tester.pumpAndSettle();
     expect(location.calls, 2);
     expect(shelterCalls, 2);
   });
@@ -153,7 +172,8 @@ void main() {
     location.pending = Completer<Coordinates>();
     await open(tester);
     response = _active('one');
-    await tester.pump(const Duration(seconds: 30));
+    await nextCheck(tester);
+    await tester.tap(find.text('避難所一覧'));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     expect(location.calls, 1);
@@ -171,6 +191,8 @@ void main() {
     location.failure = LocationProblem.denied;
     response = _active('one');
     await open(tester);
+    await tester.tap(find.text('避難所一覧'));
+    await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsOneWidget);
     response = http.Response('{"disaster":null}', 200);
     await nextCheck(tester);
@@ -179,7 +201,7 @@ void main() {
     expect(shelterCalls, 0);
   });
 
-  testWidgets('通信失敗・不正な応答ではGPS取得しない。後の正常応答で開始する', (tester) async {
+  testWidgets('通信失敗や復旧で自動取得せず、正常応答後にボタンで開始する', (tester) async {
     response = http.Response('unavailable', 503);
     await open(tester);
     expect(find.textContaining('災害情報を確認できません'), findsOneWidget);
@@ -188,6 +210,9 @@ void main() {
     expect(location.calls, 0);
     response = _active('one');
     await nextCheck(tester);
+    expect(location.calls, 0);
+    await tester.tap(find.text('避難所一覧'));
+    await tester.pumpAndSettle();
     expect(location.calls, 1);
   });
 
@@ -206,7 +231,8 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
     expect(disasterCalls, 2);
-    expect(location.calls, 1);
+    expect(location.calls, 0);
+    expect(find.text('アンケート画面'), findsOneWidget);
   });
 
   testWidgets('監視画面を破棄したら確認タイマーを止める', (tester) async {

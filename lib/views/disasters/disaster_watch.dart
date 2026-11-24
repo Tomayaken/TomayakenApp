@@ -6,7 +6,7 @@ import '../../models/active_disaster.dart';
 import '../../services/disaster_api.dart';
 import '../shelters/nearby_shelters_page.dart';
 
-/// 管理側の開始合図を確認する。位置情報の取得は災害検知後の一覧画面で行う。
+/// 災害状態を確認する。ボタンで一覧を開いたときに位置情報を取得する。
 /// この監視はアプリ表示中のみ。アプリ終了中の通知受信・GPS取得は行わない。
 class DisasterWatch extends StatefulWidget {
   const DisasterWatch({
@@ -31,7 +31,6 @@ class _DisasterWatchState extends State<DisasterWatch>
   late final DisasterApi _api;
   Timer? _timer;
   ActiveDisaster? _active;
-  String? _openedDisasterId;
   Route<void>? _shelterRoute;
   bool _checking = false;
   bool _failed = false;
@@ -81,18 +80,15 @@ class _DisasterWatchState extends State<DisasterWatch>
     try {
       final disaster = await _api.active();
       if (!mounted || !_foreground || generation != _generation) return;
+      final previousDisasterId = _active?.id;
       setState(() {
         _active = disaster;
         _failed = false;
         _checkedOnce = true;
       });
-      if (disaster == null) {
-        _openedDisasterId = null;
+      if (disaster == null || previousDisasterId != disaster.id) {
+        // 終了・切り替え時は古い一覧を閉じる。新しい一覧はボタンで開く。
         _closeShelters();
-      } else if (_openedDisasterId != disaster.id) {
-        _openedDisasterId = disaster.id;
-        _closeShelters();
-        _openShelters(disaster);
       }
     } catch (_) {
       if (!mounted || !_foreground || generation != _generation) return;
@@ -140,7 +136,7 @@ class _DisasterWatchState extends State<DisasterWatch>
         : _active != null
         ? '災害対応中：${_active!.name}'
         : _checkedOnce
-        ? '災害開始の合図を待っています。'
+        ? '現在、対応中の災害はありません。'
         : '災害情報を確認しています…';
     return Column(
       children: [
